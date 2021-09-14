@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 #
-#MODIFIED FROM KATYA for Mcaroli, mm10 liftover SEB March2018
+#MODIFIED FROM KATYA MACK for Mcaroli, mm10 liftover by SEB March2018
 #
 # download modules and make them excutable
 	#axtChain  chainMergeSort  chainSplit  faSplit  netChainSubset
