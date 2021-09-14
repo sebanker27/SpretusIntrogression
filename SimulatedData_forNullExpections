@@ -1,5 +1,31 @@
 #Assess genomic features of real data (Fst, pi)
 
-#Within population Dxy (pre-filtered for fixed sites)
+#input file: AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf
+#columns:
+#1-9 = INFO
+#10-19 = CAST10,1-9 [castaneus]
+#20-27 = FRA1-8 [domesticus]
+#28-35 = GER1-8	[domesticus]
+#36-38 = HEL1-3 [domesticus]
+#39-46 = IRA1-8 [domesticus]
+#47-52 = AFG1-6 [musculus]
+#53-60 = CZE1-8 [musculus]
+#61-68 = KAZ1-8 [musculus]
+#69-76 = SPRE1-8 [spretus]
 
-#Between population Dxy (pre-filtered for fixed sites only)
+# can also do the below step properly in vcftools with the command 
+# --keep <filename>
+# where <filename> is a list of all individuals to keep
+
+awk -F " " '{print ($1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$20"\t"$21"\t"$22"\t"$23"\t"$24"\t"$25"\t"$26"\t"$27)}' AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf > Harr_FRA.vcf
+awk -F " " '{print ($1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$28"\t"$29"\t"$30"\t"$31"\t"$32"\t"$33"\t"$34"\t"$35)}' AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf > Harr_GER.vcf
+awk -F " " '{print ($1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$39"\t"$40"\t"$41"\t"$42"\t"$43"\t"$44"\t"$45"\t"$46)}' AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf > Harr_IRA.vcf
+awk -F " " '{print ($1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$69"\t"$70"\t"$71"\t"$72"\t"$73"\t"$74"\t"$75"\t"$76)}' AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf > Harr_SPR.vcf
+
+#Within population nucleotide diversity for each population (pre-filtered for fixed sites)
+#do in vcftools  --site.pi
+
+#Between population Dxy between con-specific and hetero-specific (pre-filtered for fixed sites only)
+#scripts by Simon Martin (in python2) https://speciationgenomics.github.io/sliding_windows/
+
+
