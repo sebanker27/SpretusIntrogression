@@ -1,0 +1,95 @@
+# Detect Regions that have introgressed from M. spretus into the mm10 Mus domesticus reference genome 
+# threshold values 0.0028, 0.02, 0.007 based on average genome-wide divergence between the M. spretus and M. m. domesticus
+
+cp ../Spret1_Combined_PerDiv_10kbwind_C_27Aug2018.txt .
+sed 's/-//g' Spret1_Combined_PerDiv_10kbwind_C_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret1_highdivboth
+sed 's/-//g' Spret1_Combined_PerDiv_10kbwind_C_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret1_lowdivboth
+
+cp ../Spret2_Combined_PerDiv_10kbwind_C_27Aug2018.txt .
+sed 's/-//g' Spret2_Combined_PerDiv_10kbwind_C_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret2_highdivboth
+sed 's/-//g' Spret2_Combined_PerDiv_10kbwind_C_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret2_lowdivboth
+
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret1_highdivboth)
+
+cp ../Spret1_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+cp ../Spret2_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+cp ../Spret3_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+cp ../Spret4_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+cp ../Spret5_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+cp ../Spret6_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+cp ../Spret7_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+cp ../Spret8_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt .
+
+sed 's/-//g' Spret1_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret1_highdivboth
+sed 's/-//g' Spret1_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret1_lowdivboth
+sed 's/-//g' Spret2_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret2_highdivboth
+sed 's/-//g' Spret2_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret2_lowdivboth
+sed 's/-//g' Spret3_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret3_highdivboth
+sed 's/-//g' Spret3_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret3_lowdivboth
+sed 's/-//g' Spret4_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret4_highdivboth
+sed 's/-//g' Spret4_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret4_lowdivboth
+sed 's/-//g' Spret5_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret5_highdivboth
+sed 's/-//g' Spret5_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret5_lowdivboth
+sed 's/-//g' Spret6_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret6_highdivboth
+sed 's/-//g' Spret6_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret6_lowdivboth
+sed 's/-//g' Spret7_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret7_highdivboth
+sed 's/-//g' Spret7_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret7_lowdivboth
+sed 's/-//g' Spret8_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5>0.02) {print $1}}' > Spret8_highdivboth
+sed 's/-//g' Spret8_Combined_PerDiv_10kbwind_C_EiJonly_27Aug2018.txt | awk -F " " '{if ($9<0.0028 && $5<0.007) {print $1}}' > Spret8_lowdivboth
+
+comm -12 <(sort Spret1_lowdivboth) <(sort Spret2_highdivboth) | awk -F " " '{print $0, "yesRefand1_Not2"}' > test1.txt
+comm -12 <(sort Spret1_lowdivboth) <(sort Spret3_highdivboth) | awk -F " " '{print $0, "yesRefand1_Not3"}' >> test1.txt
+comm -12 <(sort Spret1_lowdivboth) <(sort Spret4_highdivboth) | awk -F " " '{print $0, "yesRefand1_Not4"}' >> test1.txt
+comm -12 <(sort Spret1_lowdivboth) <(sort Spret5_highdivboth) | awk -F " " '{print $0, "yesRefand1_Not5"}' >> test1.txt
+comm -12 <(sort Spret1_lowdivboth) <(sort Spret6_highdivboth) | awk -F " " '{print $0, "yesRefand1_Not6"}' >> test1.txt
+comm -12 <(sort Spret1_lowdivboth) <(sort Spret7_highdivboth) | awk -F " " '{print $0, "yesRefand1_Not7"}' >> test1.txt 
+comm -12 <(sort Spret1_lowdivboth) <(sort Spret8_highdivboth) | awk -F " " '{print $0, "yesRefand1_Not8"}' >> test1.txt
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret1_highdivboth) | awk -F " " '{print $0, "yesRefand2_Not1"}' >> test1.txt
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret3_highdivboth) | awk -F " " '{print $0, "yesRefand2_Not3"}' >> test1.txt
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret4_highdivboth) | awk -F " " '{print $0, "yesRefand2_Not4"}' >> test1.txt
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret5_highdivboth) | awk -F " " '{print $0, "yesRefand2_Not5"}' >> test1.txt
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret6_highdivboth) | awk -F " " '{print $0, "yesRefand2_Not6"}' >> test1.txt
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret7_highdivboth) | awk -F " " '{print $0, "yesRefand2_Not7"}' >> test1.txt 
+comm -12 <(sort Spret2_lowdivboth) <(sort Spret8_highdivboth) | awk -F " " '{print $0, "yesRefand2_Not8"}' >> test1.txt
+comm -12 <(sort Spret3_lowdivboth) <(sort Spret1_highdivboth) | awk -F " " '{print $0, "yesRefand3_Not1"}' >> test1.txt
+comm -12 <(sort Spret3_lowdivboth) <(sort Spret2_highdivboth) | awk -F " " '{print $0, "yesRefand3_Not2"}' >> test1.txt
+comm -12 <(sort Spret3_lowdivboth) <(sort Spret4_highdivboth) | awk -F " " '{print $0, "yesRefand3_Not4"}' >> test1.txt
+comm -12 <(sort Spret3_lowdivboth) <(sort Spret5_highdivboth) | awk -F " " '{print $0, "yesRefand3_Not5"}' >> test1.txt
+comm -12 <(sort Spret3_lowdivboth) <(sort Spret6_highdivboth) | awk -F " " '{print $0, "yesRefand3_Not6"}' >> test1.txt
+comm -12 <(sort Spret3_lowdivboth) <(sort Spret7_highdivboth) | awk -F " " '{print $0, "yesRefand3_Not7"}' >> test1.txt 
+comm -12 <(sort Spret3_lowdivboth) <(sort Spret8_highdivboth) | awk -F " " '{print $0, "yesRefand3_Not8"}' >> test1.txt
+comm -12 <(sort Spret4_lowdivboth) <(sort Spret1_highdivboth) | awk -F " " '{print $0, "yesRefand4_Not1"}' >> test1.txt
+comm -12 <(sort Spret4_lowdivboth) <(sort Spret2_highdivboth) | awk -F " " '{print $0, "yesRefand4_Not2"}' >> test1.txt
+comm -12 <(sort Spret4_lowdivboth) <(sort Spret3_highdivboth) | awk -F " " '{print $0, "yesRefand4_Not3"}' >> test1.txt
+comm -12 <(sort Spret4_lowdivboth) <(sort Spret5_highdivboth) | awk -F " " '{print $0, "yesRefand4_Not5"}' >> test1.txt
+comm -12 <(sort Spret4_lowdivboth) <(sort Spret6_highdivboth) | awk -F " " '{print $0, "yesRefand4_Not6"}' >> test1.txt
+comm -12 <(sort Spret4_lowdivboth) <(sort Spret7_highdivboth) | awk -F " " '{print $0, "yesRefand4_Not7"}' >> test1.txt 
+comm -12 <(sort Spret4_lowdivboth) <(sort Spret8_highdivboth) | awk -F " " '{print $0, "yesRefand4_Not8"}' >> test1.txt
+comm -12 <(sort Spret5_lowdivboth) <(sort Spret1_highdivboth) | awk -F " " '{print $0, "yesRefand5_Not1"}' >> test1.txt
+comm -12 <(sort Spret5_lowdivboth) <(sort Spret2_highdivboth) | awk -F " " '{print $0, "yesRefand5_Not2"}' >> test1.txt
+comm -12 <(sort Spret5_lowdivboth) <(sort Spret3_highdivboth) | awk -F " " '{print $0, "yesRefand5_Not3"}' >> test1.txt
+comm -12 <(sort Spret5_lowdivboth) <(sort Spret4_highdivboth) | awk -F " " '{print $0, "yesRefand5_Not4"}' >> test1.txt
+comm -12 <(sort Spret5_lowdivboth) <(sort Spret6_highdivboth) | awk -F " " '{print $0, "yesRefand5_Not6"}' >> test1.txt
+comm -12 <(sort Spret5_lowdivboth) <(sort Spret7_highdivboth) | awk -F " " '{print $0, "yesRefand5_Not7"}' >> test1.txt 
+comm -12 <(sort Spret5_lowdivboth) <(sort Spret8_highdivboth) | awk -F " " '{print $0, "yesRefand5_Not8"}' >> test1.txt
+comm -12 <(sort Spret6_lowdivboth) <(sort Spret1_highdivboth) | awk -F " " '{print $0, "yesRefand6_Not1"}' >> test1.txt
+comm -12 <(sort Spret6_lowdivboth) <(sort Spret2_highdivboth) | awk -F " " '{print $0, "yesRefand6_Not2"}' >> test1.txt
+comm -12 <(sort Spret6_lowdivboth) <(sort Spret3_highdivboth) | awk -F " " '{print $0, "yesRefand6_Not3"}' >> test1.txt
+comm -12 <(sort Spret6_lowdivboth) <(sort Spret4_highdivboth) | awk -F " " '{print $0, "yesRefand6_Not4"}' >> test1.txt
+comm -12 <(sort Spret6_lowdivboth) <(sort Spret5_highdivboth) | awk -F " " '{print $0, "yesRefand6_Not5"}' >> test1.txt
+comm -12 <(sort Spret6_lowdivboth) <(sort Spret7_highdivboth) | awk -F " " '{print $0, "yesRefand6_Not7"}' >> test1.txt 
+comm -12 <(sort Spret6_lowdivboth) <(sort Spret8_highdivboth) | awk -F " " '{print $0, "yesRefand6_Not8"}' >> test1.txt
+comm -12 <(sort Spret7_lowdivboth) <(sort Spret1_highdivboth) | awk -F " " '{print $0, "yesRefand7_Not1"}' >> test1.txt
+comm -12 <(sort Spret7_lowdivboth) <(sort Spret2_highdivboth) | awk -F " " '{print $0, "yesRefand7_Not2"}' >> test1.txt
+comm -12 <(sort Spret7_lowdivboth) <(sort Spret3_highdivboth) | awk -F " " '{print $0, "yesRefand7_Not3"}' >> test1.txt
+comm -12 <(sort Spret7_lowdivboth) <(sort Spret4_highdivboth) | awk -F " " '{print $0, "yesRefand7_Not4"}' >> test1.txt
+comm -12 <(sort Spret7_lowdivboth) <(sort Spret5_highdivboth) | awk -F " " '{print $0, "yesRefand7_Not5"}' >> test1.txt
+comm -12 <(sort Spret7_lowdivboth) <(sort Spret6_highdivboth) | awk -F " " '{print $0, "yesRefand7_Not6"}' >> test1.txt 
+comm -12 <(sort Spret7_lowdivboth) <(sort Spret8_highdivboth) | awk -F " " '{print $0, "yesRefand7_Not8"}' >> test1.txt
+comm -12 <(sort Spret8_lowdivboth) <(sort Spret1_highdivboth) | awk -F " " '{print $0, "yesRefand8_Not1"}' >> test1.txt
+comm -12 <(sort Spret8_lowdivboth) <(sort Spret2_highdivboth) | awk -F " " '{print $0, "yesRefand8_Not2"}' >> test1.txt
+comm -12 <(sort Spret8_lowdivboth) <(sort Spret3_highdivboth) | awk -F " " '{print $0, "yesRefand8_Not3"}' >> test1.txt
+comm -12 <(sort Spret8_lowdivboth) <(sort Spret4_highdivboth) | awk -F " " '{print $0, "yesRefand8_Not4"}' >> test1.txt
+comm -12 <(sort Spret8_lowdivboth) <(sort Spret5_highdivboth) | awk -F " " '{print $0, "yesRefand8_Not5"}' >> test1.txt
+comm -12 <(sort Spret8_lowdivboth) <(sort Spret6_highdivboth) | awk -F " " '{print $0, "yesRefand8_Not6"}' >> test1.txt 
+comm -12 <(sort Spret8_lowdivboth) <(sort Spret7_highdivboth) | awk -F " " '{print $0, "yesRefand8_Not7"}' >> test1.txt
