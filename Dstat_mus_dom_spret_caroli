@@ -1,5 +1,5 @@
 ##Getting M.caroli as new outgroup##
-#generate chain file using chain_SEB_March2018_X.sh
+#generate chain file using chain_SEB_March2018_C.sh
 #generate liftover file
 
 #change ">chr1" headers to ">1" 
