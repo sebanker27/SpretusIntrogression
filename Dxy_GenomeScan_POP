@@ -1,0 +1,190 @@
+#input file: AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf
+#columns:
+#1-9 = INFO
+#10-19 = CAST10,1-9 [castaneus]
+#20-27 = FRA1-8 [domesticus]
+#28-35 = GER1-8	[domesticus]
+#36-38 = HEL1-3 [domesticus]
+#39-46 = IRA1-8 [domesticus]
+#47-52 = AFG1-6 [musculus]
+#53-60 = CZE1-8 [musculus]
+#61-68 = KAZ1-8 [musculus]
+#69-76 = SPRE1-8 [spretus]
+
+awk -F " " '{print ($1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$20"\t"$21"\t"$28"\t"$29"\t"$37"\t"$38"\t"$39"\t"$40)}' AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf > Harr_8DOM_30July2018.vcf
+awk -F " " '{print ($1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$69"\t"$70"\t"$71"\t"$72"\t"$73"\t"$74"\t"$75"\t"$76)}' AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf > Harr_8Spret_30July2018.vcf
+
+vcftools --vcf Harr_8DOM_30July2018.vcf --max-alleles 2 --min-alleles 2 --max-maf 0.05 --max-missing-count 4 --recode --out fixedDom26Aug2018
+111772904 fixedDom26Aug2018.recode.vcf
+vcftools --vcf Harr_8Spret_30July2018.vcf --max-alleles 2 --min-alleles 2 --max-maf 0.05 --max-missing-count 4 --recode --out fixedSpret26Aug2018
+106487379 fixedSpret26Aug2018.recode.vcf
+
+#getting position and allele that is fixed in Domesticus 
+awk -F " " '{if (substr($10,1,3)=="0/0" || substr($11,1,3)=="0/0" || substr($12,1,3)=="0/0" || substr($13,1,3)=="0/0") {print $1"_"$2,$4}}' fixedDom26Aug2018.recode.vcf > fixedDom26Aug2018.pos_call.vcf
+110735229 fixedDom26Aug2018.pos_call.vcf
+awk -F " " '{if (substr($10,1,3)=="1/1" || substr($11,1,3)=="1/1" || substr($12,1,3)=="1/1" || substr($13,1,3)=="1/1") {print $1"_"$2,$5}}' fixedDom26Aug2018.recode.vcf >> fixedDom26Aug2018.pos_call.vcf
+111772787 fixedDom26Aug2018.pos_call.vcf
+sort -u fixedDom26Aug2018.pos_call.vcf > fixedDom26Aug2018.pos_call_A.vcf
+111772787 fixedDom26Aug2018.pos_call_A.vcf
+
+#adding Spret_EiJ reference to vcf
+#need to filter out Heterozygote sites, 200585/45340150 sites ~ 4.8% sites in SPRET_EiJ Heterozygous
+awk -F "\t" '{if (substr($10,1,3)!="1/1") {print}}' SPRET_EiJ.mgp.v5.snps.dbSNP142\ \(1\).vcf > SPRET_EiJ_remove.vcf
+awk -F " " '{print "chr"$1":"$2}' SPRET_EiJ_remove.vcf | sort -u > SPRET_EiJ_removepos.vcf
+sed 's/:/_/g' 
+join fixedDom26Aug2018.pos_call_A.vcf SPRET_EiJ_removepos.vcf -v 1 > fixedDom26Aug2018.pos_call_B.vcf
+111772787 fixedDom26Aug2018.pos_call_B.vcf
+awk -F " " '{print "chr"$1"_"$2,$5}' SPRET_EiJ.mgp.v5.snps.dbSNP142\ \(1\).vcf | sort -u >  SPRET_EiJ_ALTcall.txt
+
+join fixedDom26Aug2018.pos_call_B.vcf SPRET_EiJ_ALTcall.txt -a 1 > fixedDom26Aug2018.pos_call.wSpretEiJ.txt
+111772787 fixedDom26Aug2018.pos_call.wSpretEiJ.txt
+
+join fixedDom26Aug2018.pos_call_B.vcf SPRET_EiJ_ALTcall.txt > fixedDom26Aug2018.pos_call.wSpretEiJ_A.txt
+28330523 fixedDom26Aug2018.pos_call.wSpretEiJ_A.txt
+
+awk -F " " '{if (substr($10,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$4"/"$4,$11,$12,$13,$14,$15,$16,$17}else{print}}' Harr_8Spret_30July2018.vcf | \
+awk -F " " '{if (substr($10,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$4"/"$5,$11,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($10,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$5"/"$5,$11,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($10,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,"N/N",$11,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$4"/"$4,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$4"/"$5,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$5"/"$5,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,"N/N",$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$4"/"$4,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$4"/"$5,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$5"/"$5,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,"N/N",$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$4"/"$4,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$4"/"$5,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$5"/"$5,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,"N/N",$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$4"/"$4,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$4"/"$5,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$5"/"$5,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,"N/N",$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$4"/"$4,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$4"/"$5,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$5"/"$5,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,"N/N",$16,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$4"/"$4,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$4"/"$5,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$5"/"$5,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,"N/N",$17}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$4"/"$4}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$4"/"$5}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$5"/"$5}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,"N/N"}else{print}}' | \
+awk -F " " '{if (substr($1,1,2)!="##") {print $1"_"$2,$4,$5,$10,$11,$12,$13,$14,$15,$16,$17}}'|\
+sort -u > Harr_8Spret_Genotypes_37Aug2018.txt 
+
+#fill with mm10 sites filled in where missing in EiJ vcf
+join Harr_8Spret_Genotypes_37Aug2018.txt fixedDom26Aug2018.pos_call.wSpretEiJ.txt > fixedDomsites_SpretGenotypes_27Aug2018.txt
+110662157 fixedDomsites_SpretGenotypes_27Aug2018.txt
+awk -F " " '{print ($1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$2)}' fixedDomsites_SpretGenotypes_27Aug2018.txt | awk -F " " '{print ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)}' > fixedDomsites_SpretGenotypes_27Aug2018_A.txt  
+110662157 fixedDomsites_SpretGenotypes_27Aug2018_A.txt
+
+#only sites that were in EiJ vcf
+join Harr_8Spret_Genotypes_37Aug2018.txt fixedDom26Aug2018.pos_call.wSpretEiJ_A.txt > fixedDomsites_SpretEiJonlyGenotypes_27Aug2018.txt
+wc -l fixedDomsites_SpretEiJonlyGenotypes_27Aug2018.txt
+#28178297 fixedDomsites_SpretEiJonlyGenotypes_27Aug2018.txt
+awk -F " " '{print ($1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)}' fixedDomsites_SpretEiJonlyGenotypes_27Aug2018.txt  > fixedDomsites_SpretEiJonlyGenotypes_27Aug2018_A.txt  
+wc -l fixedDomsites_SpretEiJonlyGenotypes_27Aug2018_A.txt
+#28178297 fixedDomsites_SpretEiJonlyGenotypes_27Aug2018_A.txt
+
+#USE THIS FILE FOR LOOP <fixedDomsites_SpretGenotypes_27Aug2018_A.txt>
+#columns:
+#1: chr_pos
+#2-9: SPRET indiv 1-8
+#10: allele fixed in Domesticus
+#11: Spret EiJ allele (filled in with mm10 at sites not in EiJ vcf)
+
+#USE THIS FILE FOR LOOP <fixedDomsites_SpretEiJonlyGenotypes_27Aug2018_A.txt>
+#columns:
+#1: chr_pos
+#2-9: SPRET indiv 1-8
+#10: allele fixed in Domesticus
+#11: Spret EiJ allele (NOT filled in with mm10, only sites in EiJ vcf)
+
+
+_______
+#getting position and allele that is fixed in Spretus 
+awk -F " " '{if (substr($10,1,3)=="0/0" || substr($11,1,3)=="0/0" || substr($12,1,3)=="0/0" || substr($13,1,3)=="0/0") {print $1"_"$2,$4}}' fixedSpret26Aug2018.recode.vcf > fixedSpret26Aug2018.pos_call.vcf
+wc -l fixedSpret26Aug2018.pos_call.vcf
+#78838745 fixedSpret26Aug2018.pos_call.vcf
+awk -F " " '{if (substr($10,1,3)=="1/1" || substr($11,1,3)=="1/1" || substr($12,1,3)=="1/1" || substr($13,1,3)=="1/1") {print $1"_"$2,$5}}' fixedSpret26Aug2018.recode.vcf >> fixedSpret26Aug2018.pos_call.vcf
+wc -l fixedSpret26Aug2018.pos_call.vcf
+#106487262 fixedSpret26Aug2018.pos_call.vcf
+sort -u fixedSpret26Aug2018.pos_call.vcf > fixedSpret26Aug2018.pos_call_A.vcf
+wc -l fixedSpret26Aug2018.pos_call_A.vcf
+#106487262 fixedSpret26Aug2018.pos_call_A.vcf
+
+#first line of this specifies the individuals in each of the populations. this one is for Germany, change first line for France and Iran populations
+awk -F " " '{print ($1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9"\t"$28"\t"$29"\t"$30"\t"$31"\t"$32"\t"$33"\t"$34"\t"$35)}' AllMouse.vcf_90_recalibrated_snps_raw_indels_reheader_PopSorted.PASS.vcf | \
+awk -F " " '{if (substr($10,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$4"/"$4,$11,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($10,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$4"/"$5,$11,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($10,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$5"/"$5,$11,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($10,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,"N/N",$11,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$4"/"$4,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$4"/"$5,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$5"/"$5,$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($11,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,"N/N",$12,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$4"/"$4,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$4"/"$5,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$5"/"$5,$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($12,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,"N/N",$13,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$4"/"$4,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$4"/"$5,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$5"/"$5,$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($13,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,"N/N",$14,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$4"/"$4,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$4"/"$5,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$5"/"$5,$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($14,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,"N/N",$15,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$4"/"$4,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$4"/"$5,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$5"/"$5,$16,$17}else{print}}' | \
+awk -F " " '{if (substr($15,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,"N/N",$16,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$4"/"$4,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$4"/"$5,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$5"/"$5,$17}else{print}}' | \
+awk -F " " '{if (substr($16,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,"N/N",$17}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="0/0") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$4"/"$4}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="0/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$4"/"$5}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="1/1") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$5"/"$5}else{print}}' | \
+awk -F " " '{if (substr($17,1,3)=="./.") {print $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,"N/N"}else{print}}' | \
+awk -F " " '{if (substr($1,1,2)!="##") {print $1"_"$2,$4,$5,$10,$11,$12,$13,$14,$15,$16,$17}}'|\
+sort -u > Harr_8GER_Genotypes_14JUN2019.txt 
+
+join Harr_8GER_Genotypes_14JUN2019.txt fixedSpret26Aug2018.pos_call_A.vcf > fixedSpretsites_GERDomGenotypes_14JUN2019.txt
+wc -l fixedSpretsites_GERDomGenotypes_14JUN2019.txt
+
+awk -F " " '{print ($1,$4,$5,$6,$7,$8,$9,$10,$11,$12,$2)}' fixedSpretsites_GERDomGenotypes_14JUN2019.txt  > fixedSpretsites_GERDomGenotypes_14JUN2019_A.txt  
+wc -l fixedSpretsites_GERDomGenotypes_14JUN2019_A.txt
+
+
+#USE THIS FILE FOR LOOP <fixedSpretsites_GERDomGenotypes_14JUN2019_A.txt>
+#columns:
+#1: chr_pos
+#2-9: GER domesticus indiv 1-8
+#10: allele fixed in Spret
+#11: mm10 allele
+
+______
+
+Loop: 
+
+#need make windows
+#make file using vim with end positions of all the chromosomes (taken from NCBI info per chromosome), saved as "windows_19chrs_1.txt"
+#added X chr to this file, saved as "windows_19chrsX.txt" 
+
+#make 10kb windows
+bedtools makewindows -g windows_19chrsX_A.txt -w 10000 > 10kb_windows_19chrsX.txt
+
+cp 10kb_windows_19chrsX.txt ./vcfs_July2018
+
+Loops: 
+Diff%Div_Loop_27Aug2018_EiJwomm10.sh
+Diff%Div_Loop_27Aug2018_EiJwmm10.sh
+Diff%Div_Loop_27Aug2018_GER.sh
+Diff%Div_Loop_27Aug2018_FRA.sh
+Diff%Div_Loop_27Aug2018_IRA.sh
