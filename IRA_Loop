@@ -1,0 +1,58 @@
+#!/bin/bash
+
+for i  in 1 2 3 4 5 6 7 8  
+do      
+	#input file: fixedSpretsites_8IRA_Genotypes_14JUN2019_mm10sitesRem.txt
+	#MadridSpreti vs SpretEIJ
+	awk -F " " '{if (substr($(1+'$i'),1,1)!=$11) {print ("ind"'$i'"_vEIJ"),$1,$11,$(1+'$i'),substr($(1+'$i'),1,1)}}' fixedSpretsites_8IRA_Genotypes_14JUN2019_mm10sitesRem.txt > ind"$i"_EIJ_temp.txt
+	awk -F " " '{if (substr($(1+'$i'),3,3)!=$11) {print ("ind"'$i'"_vEIJ"),$1,$11,$(1+'$i'),substr($(1+'$i'),3,3)}}' fixedSpretsites_8IRA_Genotypes_14JUN2019_mm10sitesRem.txt>> ind"$i"_EIJ_temp.txt
+	awk -F " " '{if ($5!="N") {print}}' ind"$i"_EIJ_temp.txt | sort -k2 > Spret"$i"vEIJ_bothalleles_A.txt
+
+	#MadridSpreti vs Domesticus ref
+	awk -F " " '{if (substr($(1+'$i'),1,1)!=$10) {print ("ind"'$i'"_vdom"),$1,$10,$(1+'$i'),substr($(1+'$i'),1,1)}}' fixedSpretsites_8IRA_Genotypes_14JUN2019_mm10sitesRem.txt  > ind"$i"_dom_temp.txt
+	awk -F " " '{if (substr($(1+'$i'),3,3)!=$10) {print ("ind"'$i'"_vdom"),$1,$10,$(1+'$i'),substr($(1+'$i'),3,3)}}' fixedSpretsites_8IRA_Genotypes_14JUN2019_mm10sitesRem.txt  >> ind"$i"_dom_temp.txt
+	awk -F " " '{if ($5!="N") {print}}' ind"$i"_dom_temp.txt | sort -k2 > Spret"$i"vDom_bothalleles_A.txt
+
+	#rearrange files to .bed format
+	awk -F " " '{print $2,$3}' Spret"$i"vDom_bothalleles_A.txt| awk -F "_" '{print $1,$2}' | awk -F " " '{print ($1"\t"($2-1)"\t"$2"\t""ind"'$i'"v_dom")}' | sortBed > Spret"$i"vDom_SNPs_A.bed
+	awk -F " " '{print $2,$3}' Spret"$i"vEIJ_bothalleles_A.txt| awk -F "_" '{print $1,$2}' | awk -F " " '{print ($1"\t"($2-1)"\t"$2"\t""ind"'$i'"v_EIJ")}' | sortBed > Spret"$i"vEIJ_SNPs_A.bed
+
+	#remove unneccessary files
+	rm ind"$i"_EIJ_temp.txt
+	rm ind"$i"_dom_temp.txt
+	rm Spret"$i"vEIJ_bothalleles_A.txt
+	rm Spret"$i"vDom_bothalleles_A.txt
+
+	###Intersect SNP files with windows files####
+	#Spret1_vs_EIJ	
+	bedtools intersect -wa -a 10kb_windows_19chrsX.txt -b Spret"$i"vEIJ_SNPs_A.bed | uniq -c | awk -F' ' '{print $2,$3,$4,$1,$1/10000}' > PerDiv_10kbwind_Spret"$i"vEIJ_A.txt
+	#Spret1_vs_Dom
+	bedtools intersect -wa -a 10kb_windows_19chrsX.txt -b Spret"$i"vDom_SNPs_A.bed | uniq -c | awk -F' ' '{print $2,$3,$4,$1,$1/10000}' > PerDiv_10kbwind_Spret"$i"vDom_A.txt
+
+	###Join percent div files to the original windows file to calculate difference % divergence###
+	#combine chr_startpos to be able to join files
+	awk -F " " '{print $1"_"$2,$3,$4,$5}' PerDiv_10kbwind_Spret"$i"vEIJ_A.txt > PerDiv_10kbwind_Spret"$i"vEIJ_AA.txt
+	awk -F " " '{print $1"_"$2,$3,$4,$5}' PerDiv_10kbwind_Spret"$i"vDom_A.txt > PerDiv_10kbwind_Spret"$i"vDom_AA.txt
+	awk -F " " '{print $1"_"$2, $3}' 10kb_windows_19chrsX.txt > 10kb_windows_19chrsX_A.txt
+	
+	join -a 1 -1 1 -2 1 <(sort 10kb_windows_19chrsX_A.txt) <(sort PerDiv_10kbwind_Spret"$i"vEIJ_AA.txt) > Spr"$i"_Combined_PerDiv_10kbwind.txt
+
+	awk -F " " '{if ($3=="") {print $1,$2,"0","0","0"}else{print}}' Spr"$i"_Combined_PerDiv_10kbwind.txt > Spr"$i"_Combined_PerDiv_10kbwind_A.txt
+
+	join -a 1 -1 1 -2 1 <(sort Spr"$i"_Combined_PerDiv_10kbwind_A.txt) <(sort PerDiv_10kbwind_Spret"$i"vDom_AA.txt) > Spr"$i"_Combined_PerDiv_10kbwind_B.txt
+
+	awk -F " " '{if ($6=="") {print $1,$2,$3,$4,$5,"0","0","0",($8-$5)}else{print($0,($8-$5))}}' Spr"$i"_Combined_PerDiv_10kbwind_B.txt > IRA"$i"_Combined_PerDiv_10kbwind_C_27Aug2018.txt
+
+	###remove unnecessary files
+	rm PerDiv_10kbwind_Spret"$i"vEIJ_A.txt
+	rm PerDiv_10kbwind_Spret"$i"vDom_A.txt
+	rm PerDiv_10kbwind_Spret"$i"vEIJ_AA.txt
+	rm PerDiv_10kbwind_Spret"$i"vDom_AA.txt
+	rm Spr"$i"_Combined_PerDiv_10kbwind.txt
+	rm Spr"$i"_Combined_PerDiv_10kbwind_A.txt
+	rm Spr"$i"_Combined_PerDiv_10kbwind_B.txt
+done
+
+#bedtools intersect -wa -a 10kb_windows_19chrs.txt -b Spret1vEiJ_SNPs_A.bed | uniq -c | awk -F' ' '{print $2,$3,$4,$1,$1/10000}' | awk '{ sum += $5 } END { if (NR > 0) print sum / NR }'
+
+#head Spret1vEIJ_SNPs_A.bed
