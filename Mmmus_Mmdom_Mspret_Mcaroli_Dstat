@@ -105,30 +105,44 @@ awk -F " " '{print $1, $2, $3, $4}' working_McaroliDerived_8IRA_DOM.txt > first4
 paste first4FINAL100_Mcaroli_8IRA_DOM.txt working_McaroliDerived_8IRA_DOM_A.txt > ADD_McaroliAncestral_8IRA_DOM.txt
 cat ADD_McaroliAncestral_8IRA_DOM.txt >> working_McaroliAncestral_8IRA_DOM.txt
 
-awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18)/16)}' working_McaroliAncestral_8Kaz_MUS.txt > p_i_MUS_Mcaroli.txt
-awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18)/16)}' working_McaroliAncestral_8Spn_SPRET.txt > p_i_SPRET_Mcaroli.txt
-awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18)/16)}' working_McaroliAncestral_8FRA_DOM.txt > p_i_FRA_Mcaroli.txt
-awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18)/16)}' working_McaroliAncestral_8GER_DOM.txt > p_i_GER_Mcaroli.txt
-awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18)/16)}' working_McaroliAncestral_8IRA_DOM.txt > p_i_IRA_Mcaroli.txt
+### Combine FRA, GER, and IRA derived allele files into one file for D-statistic calculations.
+## This step was also done for each of the populations indiviudally, without the step to combine the pops. 
 
-awk -F " " '{print $21}' p_i_FRA_Mcaroli.txt > p_i_FRA1_Mcaroli.txt
-awk -F " " '{print $21}' p_i_SPRET_Mcaroli.txt > p_i_SPRET1_Mcaroli.txt
-awk -F " " '{print $21}' p_i_MUS_Mcaroli.txt > p_i_MUS1_Mcaroli.txt
-awk -F " " '{print $21}' p_i_GER_Mcaroli.txt > p_i_GER1_Mcaroli.txt
-awk -F " " '{print $21}' p_i_IRA_Mcaroli.txt > p_i_IRA1_Mcaroli.txt
+#input files (created above): 
+# working_McaroliAncestral_8FRA_DOM.txt
+# working_McaroliAncestral_8GER_DOM.txt
+# working_McaroliAncestral_8IRA_DOM.txt
+# working_McaroliAncestral_8Kaz_MUS.txt
+# working_McaroliAncestral_8Spn_SPRET.txt
 
-paste p_i_FRA1_Mcaroli.txt p_i_MUS1_Mcaroli.txt p_i_SPRET1_Mcaroli.txt > Pi_FRA_MUS_SPRET_Mcaroli.txt
-paste p_i_GER1_Mcaroli.txt p_i_MUS1_Mcaroli.txt p_i_SPRET1_Mcaroli.txt > Pi_GER_MUS_SPRET_Mcaroli.txt
-paste p_i_IRA1_Mcaroli.txt p_i_MUS1_Mcaroli.txt p_i_SPRET1_Mcaroli.txt > Pi_IRA_MUS_SPRET_Mcaroli.txt
+awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18+$19+$20)/16)}' working_McaroliAncestral_8Kaz_MUS.txt > p_i_MUS_Mcaroli.txt
+awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18+$19+$20)/16)}' working_McaroliAncestral_8Spn_SPRET.txt > p_i_SPRET_Mcaroli.txt
+awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18+$19+$20)/16)}' working_McaroliAncestral_8FRA_DOM.txt > p_i_FRA_Mcaroli.txt
+awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18+$19+$20)/16)}' working_McaroliAncestral_8GER_DOM.txt > p_i_GER_Mcaroli.txt
+awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18+$19+$20)/16)}' working_McaroliAncestral_8IRA_DOM.txt > p_i_IRA_Mcaroli.txt
 
-awk -F " " '{print ($0, ((1-$1)*$2*$3))}'  Pi_FRA_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
-awk -F " " '{print ($0, ($1*(1-$2)*$3))}'  Pi_FRA_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
-awk -F " " '{print ($0, ($1*$2*(1-$3)))}'  Pi_FRA_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
+awk -F " " '{print $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20}' working_McaroliAncestral_8GER_DOM.txt > GERderived.txt
+awk -F " " '{print $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20}' working_McaroliAncestral_8IRA_DOM.txt > IRAderived.txt
+paste working_McaroliAncestral_8FRA_DOM.txt GERderived.txt IRAderived.txt > workingMcaroliAncestral24Dom.txt
 
-awk -F " " '{print ($0, ((1-$1)*$2*$3))}'  Pi_GER_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
-awk -F " " '{print ($0, ($1*(1-$2)*$3))}'  Pi_GER_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
-awk -F " " '{print ($0, ($1*$2*(1-$3)))}'  Pi_GER_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
+awk -F " " '{print $0, (($5+$6+$7+$8+$9+$10+$11+$12+$13+$14+$15+$16+$17+$18+$19+$20+$21+$22+$23+$24+$25+$26+$27+$28+$29+$30+$31+$32+$33+$34+$35+$36+$37+$38+$39+$40+$41+$42+$43+$44+$45+$46+$47+$48+$49+$50+$51+$52)/48)}' workingMcaroliAncestral24Dom.txt > p_i_24Domesticus_Mcaroli.txt
+awk -F " " '{print $53}' p_i_24Domesticus_Mcaroli.txt > p_i_24Domesticus_Mcaroli1.txt
 
-awk -F " " '{print ($0, ((1-$1)*$2*$3))}'  Pi_IRA_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
-awk -F " " '{print ($0, ($1*(1-$2)*$3))}'  Pi_IRA_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
-awk -F " " '{print ($0, ($1*$2*(1-$3)))}'  Pi_IRA_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
+paste p_i_24Domesticus_Mcaroli1.txt p_i_MUS1_Mcaroli.txt p_i_SPRET1_Mcaroli.txt > Pi_24Dom_MUS_SPRET_Mcaroli.txt
+
+awk -F " " '{print ($0, ((1-$1)*$2*$3))}'  Pi_24Dom_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
+awk -F " " '{print ($0, ($1*(1-$2)*$3))}'  Pi_24Dom_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
+awk -F " " '{print ($0, ($1*$2*(1-$3)))}'  Pi_24Dom_MUS_SPRET_Mcaroli.txt | awk '{ sum +=$4 } END {print sum}'
+
+paste chr_pos_toJoin.txt Pi_24Dom_MUS_SPRET_Mcaroli.txt  > Pi_24Dom_MUS_SPRET_Mcaroli_WithPos.txt
+awk -F " " '{print ($1,$2,$3,((1-$4)*$5*$6),($4*(1-$5)*$6))}' Pi_24Dom_MUS_SPRET_Mcaroli_WithPos.txt > 24Dom_MUS_SPRET_Mcaroli_ABBABABA.txt
+
+24Dom_MUS_SPRET_Mcaroli_ABBABABA.txt
+bash countABBABABA_200kb_24Dom.sh
+
+#paste 10kb_windows_19chrsX.txt ABBAcount_24Dom_MUS_SPRET_Mcaroli_12Nov2020.txt BABAcount_24Nov_MUS_SPRET_Mcaroli_12Nov2020.txt > ABBABABA_10kbwindowcount_24Nov_MUS_SPRET_McaroliT_12Nov2020.txt
+
+#awk -F " " '{if (($1=="1") && ($2>70000) && ($3<80000)) {print}}' Pi_FRA_MUS_SPRET_Mcaroli_WithPos.txt | awk '{ sum += $4 } END { print sum }' 
+
+#paste ABBAcount_FRA_MUS_SPRET_Mcaroli_01OCT2018_200kbwind.txt BABAcount_FRA_MUS_SPRET_Mcaroli_01OCT2018_200kbwind.txt | awk -F " " '{print ($1,$2,$3,$4,$8,$4,$8,$4,$8)}' > partial_ABBABABA_200kbwindow_count_4Oct2018.txt
+#Rscript jackKnife.R file=partial_ABBABABA_200kbwindow_count_4Oct2018.txt indNames=angsdtest_filenames.txt outfile=partial_4Oct2018
